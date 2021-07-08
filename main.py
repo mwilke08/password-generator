@@ -39,6 +39,22 @@ def generate_password():
     password_input.insert(0, password)
 
 
+# ---------------------------- FIND PASSWORD ------------------------------- #
+def find_password():
+    try:
+        with open("data.json", "r") as file:
+            data = json.load(file)
+            website_to_find = website_input_field.get()
+            try:
+                if data[website_to_find]:
+                    data_found = data[website_to_find]
+                    messagebox.showinfo(title=f"{website_to_find}", message=f"Email: {data_found['email']}\n"
+                                                                                f"Password: {data_found['password']}")
+            except KeyError:
+                messagebox.showinfo(title="Oops", message="No details for the website exist.")
+    except FileNotFoundError:
+        messagebox.showinfo(title="Oops", message="No data file found")
+
 # ---------------------------- SAVE PASSWORD ------------------------------- #
 
 def get_input():
@@ -107,9 +123,12 @@ website_label = Label(text="Website:")
 website_input_field = Entry(width=35)
 # focus cursor on first entry
 website_input_field.focus()
+# search button to search for a saved password on the website
+search_button = Button(text="Search", command=find_password)
 
 website_label.grid(row=1, column=0)
-website_input_field.grid(row=1, column=1, columnspan=2, sticky="EW")
+website_input_field.grid(row=1, column=1, sticky="EW")
+search_button.grid(row=1, column=2, sticky="EW")
 
 # create the "email/username" section
 email_username_label = Label(text="Email/Username:")
