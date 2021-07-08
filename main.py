@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import messagebox
 import random
 import pyperclip
+import json
 
 
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
@@ -40,17 +41,6 @@ def generate_password():
 
 # ---------------------------- SAVE PASSWORD ------------------------------- #
 
-def show_popup_confirm(inputs):
-    if len(inputs['website']) == 0 or len(inputs['password']) == 0:
-        return False
-    else:
-        return messagebox.askokcancel(title=inputs['website'],
-                                      message=f"These are the details entered:"
-                                              f"\nEmail: {inputs['email']}"
-                                              f"\nPassword: {inputs['password']}"
-                                              f"\nIs it ok to save?")
-
-
 def get_input():
     website = website_input_field.get()
     email = email_username_input.get()
@@ -70,16 +60,26 @@ def clear_inputs():
 
 def save_password():
     inputs = get_input()
+    new_data = {
+        inputs["website"]: {
+            "email": inputs["email"],
+            "password": inputs["password"],
+        }
+    }
 
-    if show_popup_confirm(inputs):
-        with open("data.txt", "a") as file:
-            for key, data in inputs.items():
-                file.write(f"{key}: {data} | ")
-            file.write("\n")
+    if len(inputs['website']) == 0 or len(inputs['password']) == 0:
+        messagebox.showinfo(title="Ooops", message="Please don't leave any fields empty!")
+    else:
+        with open("data.json", "r") as file:
+            # reading the old data
+            data = json.load(file)
+            # updating the old data to add the new data
+            data.update(new_data)
+        with open("data.json", "w") as file:
+            # saving the updated data
+            json.dump(data, file, indent=4)
 
         clear_inputs()
-    else:
-        messagebox.showinfo(title="Ooops", message="Please don't leave any fields empty!")
 
 
 # ---------------------------- UI SETUP ------------------------------- #
